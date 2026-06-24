@@ -1,55 +1,57 @@
-# Web Development Project 2 - CineQuiz
+# Web Development Project 3 - CineQuiz
 
 Submitted by: **Daniel Pramod Bayya**
 
-This web app: **CineQuiz — a movie quote flashcard game where you guess the film from an iconic line. Reveal up to 3 hints per card, but each hint costs a point. Cards are shuffled randomly each round and your score is tracked throughout.**
+This web app: **CineQuiz — an extended movie quote flashcard game. Guess the film from an iconic line, navigate cards sequentially with back/next buttons, get instant visual feedback on your answers, and track your current and longest correct streaks. Cards can be shuffled on demand, and fuzzy matching accepts common alternate spellings.**
 
-Time spent: **4** hours spent in total
+Time spent: **2** hours spent in total
 
 ## Required Features
 
 The following **required** functionality is completed:
 
-- [x] **The app displays the title of the card set, a short description, and the total number of cards**
-  - [x] Title of card set is displayed
-  - [x] A short description of the card set is displayed
-  - [x] A list of card pairs is created
-  - [x] The total number of cards in the set is displayed
-  - [x] Card set is represented as a list of card pairs (an array of dictionaries where each dictionary contains the question and answer is perfectly fine)
-- [x] **A single card at a time is displayed**
-  - [x] Only one half of the information pair is displayed at a time
-- [x] **Clicking on the card flips the card over, showing the corresponding component of the information pair**
-  - [x] Clicking on a card flips it over, showing the back with corresponding information
-  - [x] Clicking on a flipped card again flips it back, showing the front
-- [x] **Clicking on the next button displays a random new card**
+- [x] **The user can enter their guess into an input box *before* seeing the flipside of the card**
+  - Application features a clearly labeled input box with a submit button where users can type in a guess
+  - Clicking on the submit button with an **incorrect** answer shows visual feedback that it is wrong (red border + shake animation on the input)
+  - Clicking on the submit button with a **correct** answer shows visual feedback that it is correct (green overlay with check mark on the card)
+- [x] **The user can navigate through an ordered list of cards**
+  - A forward/next button displayed on the card navigates to the next card in a set sequence when clicked
+  - A previous/back button displayed on the card returns to the previous card in the set sequence when clicked
+  - Both the next and back buttons gray out and become unclickable at the boundaries — Back is disabled on card 1, Next shows "See Results" on the last card — no wrap-around navigation
 
 The following **optional** features are implemented:
 
-- [ ] Cards contain images in addition to or in place of text
-- [x] Cards have different visual styles such as color based on their category
-  - [x] Cards display the release year of the film as a category label
+- [x] Users can use a shuffle button to randomize the order of the cards
+  - Cards remain in their original sequence unless the shuffle button is clicked
+  - Clicking the Shuffle button reorders the deck randomly and resets to card 1
+- [x] A user's answer may be counted as correct even when it is slightly different from the target answer
+  - Answers are case-insensitive and punctuation is ignored before comparing
+  - Partial matches are accepted — e.g. "dark knight" matches "The Dark Knight", and alternate titles like "Forest Gump" match "Forrest Gump" via an altAnswers field on each card
+- [x] A counter displays the user's current and longest streak of correct responses
+  - The current streak counter increments each time the user guesses correctly
+  - The current streak resets to 0 when the user guesses incorrectly or gives up
+  - A separate longest streak counter updates whenever the current streak exceeds the previous best
+- [ ] A user can mark a card that they have mastered and have it removed from the pool of displayed cards
 
 The following **additional** features are implemented:
 
-* [x] Progressive hint system — reveal up to 3 hints per card, each costs −1 point
-* [x] Live score tracker shown in the header throughout the game
-* [x] End-of-game results screen with per-card breakdown and a rank title (Film Critic → First Timer)
-* [x] Fuzzy answer matching — accepts common alternate spellings and partial movie titles
-* [x] Wrong answer shake animation on the input field
+* [x] Progressive hint system — reveal up to 3 hints per card, but each hint deducts 1 point from the card's value (3 pts to 2 pts to 1 pt minimum)
+* [x] Fun fact shown after each card is answered, win or lose
+* [x] End-of-game results screen with a per-card breakdown and a rank title based on final score
 
 ## Video Walkthrough
 
-Here's a walkthrough of implemented required features:
+Here's a walkthrough of implemented user stories:
 
-[Watch Walkthrough](https://drive.google.com/file/d/12OYoYZJAKEL6VQXZzVKnCldKSXtsIuyL/view?usp=sharing)
+<img src='PASTE_YOUR_GIF_LINK_HERE' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 GIF created with [Kap](https://getkap.co/) for macOS
 
 ## Notes
 
-The trickiest part was the hint-and-scoring system: `hintsRevealed` state lives inside `GameCard` but the score is calculated in `App`. Solved this by passing the hint count up through `onCorrect(hintsUsed)` and `onSkip(hintsUsed)` callbacks so the parent always has it when computing points.
+The trickiest part of this extension was handling navigation state correctly. Since GameCard holds its own local state (guess, hints revealed, submitted), navigating away and back would show a stale answered card. The fix was adding key={cardIndex} to the GameCard element in App.jsx — React treats a new key as a completely new component instance, so all local state resets automatically on every card change without needing a useEffect cleanup.
 
-Fuzzy matching was also tricky to tune — too strict and "Forrest Gump" vs "Forest Gump" fails, too loose and unrelated guesses pass. The current approach normalizes both strings (lowercase, strip punctuation) then checks for exact match or substring containment.
+Removing the setTimeout auto-advance from Project 2 also required rethinking the flow. Cards now stay visible after answering so users can read the fun fact, then navigate manually — which feels more natural for a study tool.
 
 ## License
 
